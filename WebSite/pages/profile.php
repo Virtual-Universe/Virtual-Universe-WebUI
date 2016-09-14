@@ -1,4 +1,4 @@
-<pre><?php
+<?php
 if(empty($_GET['user']) || $_GET['user'] == "")
 {
 $user = $_SESSION['uuid'];
@@ -10,7 +10,7 @@ $user = $_GET['user'];
 $data = array("Method" => "GetProfile",  'WebPassword' => md5(WEBUI_PASSWORD),
                                  'UUID' => $user);
                                      $verified = $curl->perform_action($data);
-                          
+                     
                                      echo "<center><h3><b>Account Info:</b></h3><hr>";
                                             
                                                $profileImage = $verified[profile][Image];
