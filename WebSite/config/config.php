@@ -1,5 +1,5 @@
 <?php
-define("TITLE","WhiteCoreWebUI");
+define("TITLE","Virtual-WebUI");
 define("WEBUI_SERVICE_URL","http://domain.com:8007/WEBUI");
 define("WEBUI_TEXTURE_SERVICE","http://domain.com:8002");
 define("WEBUI_MAP_SERVICE","http://domain.com:8012/MapService");
