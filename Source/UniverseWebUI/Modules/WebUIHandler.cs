@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) Contributors, http://virtual-planets.org/, http://whitecore-sim.org/, http://aurora-sim.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -56,7 +56,7 @@ using Universe.Framework.Services.ClassHelpers.Assets;
 using Universe.Framework.Services.ClassHelpers.Profile;
 using Universe.Framework.Utilities;
 using Universe.Modules;
-using Universe.Modules.Currency.BaseCurrency;
+using Universe.Modules.Currency;
 using DataPlugins = Universe.Framework.Utilities.DataManager;
 using FriendInfo = Universe.Framework.Services.FriendInfo;
 using GridRegion = Universe.Framework.Services.GridRegion;
@@ -217,13 +217,13 @@ namespace Universe.Addon.WebUI
 
         #region Console Commands
 
-        private void PromoteUser (IScene scene, string[] cmd)
+        private void PromoteUser(IScene scene, string[] cmd)
         {
-            string name = MainConsole.Instance.Prompt ("Name of user");
-            UserAccount acc = m_registry.RequestModuleInterface<IUserAccountService> ().GetUserAccount(null, name);
+            string name = MainConsole.Instance.Prompt("Name of user");
+            UserAccount acc = m_registry.RequestModuleInterface<IUserAccountService>().GetUserAccount(null, name);
             if (acc == null)
             {
-                MainConsole.Instance.Warn ("You must create the user before promoting them.");
+                MainConsole.Instance.Warn("You must create the user before promoting them.");
                 return;
             }
             IAgentConnector agents = DataPlugins.RequestPlugin<IAgentConnector>();
@@ -232,7 +232,7 @@ namespace Universe.Addon.WebUI
                 MainConsole.Instance.Warn("Could not get IAgentConnector plugin");
                 return;
             }
-            IAgentInfo agent = agents.GetAgent (acc.PrincipalID);
+            IAgentInfo agent = agents.GetAgent(acc.PrincipalID);
             if (agent == null)
             {
                 MainConsole.Instance.Warn("Could not get IAgentInfo for " + name + ", try logging the user into your grid first.");
@@ -240,32 +240,32 @@ namespace Universe.Addon.WebUI
             }
             agent.OtherAgentInformation["WebUIEnabled"] = true;
             DataPlugins.RequestPlugin<IAgentConnector>().UpdateAgent(agent);
-            MainConsole.Instance.Warn ("Admin added");
+            MainConsole.Instance.Warn("Admin added");
         }
 
-		#region newcommands
-		//Bit of Sanitizing
-		public static string CleanCommandStrings(string dirtyString)
-		{
-			string removeChars = " ?&^$#@!()+-,:;<>’\'-_*";
-			string result = dirtyString;
+        #region newcommands
+        //Bit of Sanitizing
+        public static string CleanCommandStrings(string dirtyString)
+        {
+            string removeChars = " ?&^$#@!()+-,:;<>’\'-_*";
+            string result = dirtyString;
 
-			foreach (char c in removeChars)
-			{
-				result = result.Replace(c.ToString(), string.Empty);
-			}
+            foreach (char c in removeChars)
+            {
+                result = result.Replace(c.ToString(), string.Empty);
+            }
 
-			return result;
-		}
-		//Provides additional commands to be sent directly to the GridServer
-		private void WipeDeadRegions(IScene scene)
-		{
-			MainConsole.Instance.RunCommand ("grid clear down regions");
-		}
-		private void WipeRegionByName(IScene scene, string regionname)
-		{
-			MainConsole.Instance.RunCommand ("grid clear region " + regionname);
-		}
+            return result;
+        }
+        //Provides additional commands to be sent directly to the GridServer
+        private void WipeDeadRegions(IScene scene)
+        {
+            MainConsole.Instance.RunCommand("grid clear down regions");
+        }
+        private void WipeRegionByName(IScene scene, string regionname)
+        {
+            MainConsole.Instance.RunCommand("grid clear region " + regionname);
+        }
 
         private void GetUserMoney(IScene scene, UUID User)
         {
@@ -274,23 +274,23 @@ namespace Universe.Addon.WebUI
 
         private void TransferMoney(IScene scene, UUID from, UUID to, uint amount)
         {
-            m_connector.UserCurrencyTransfer(to, from, amount, "Money Transfer from" + from , TransactionType.MoveMoney,
+            m_connector.UserCurrencyTransfer(to, from, amount, "Money Transfer from" + from, TransactionType.MoveMoney,
                 UUID.Zero);
         }
 
         private void SetLoginText(IScene scene, string text)
-		{
-            MainConsole.Instance.RunCommand ("set login text " + CleanCommandStrings(text));
-		}
+        {
+            MainConsole.Instance.RunCommand("set login text " + CleanCommandStrings(text));
+        }
 
-		#endregion
+        #endregion
         private void DemoteUser(IScene scene, string[] cmd)
         {
-            string name = MainConsole.Instance.Prompt ("Name of user");
-            UserAccount acc = m_registry.RequestModuleInterface<IUserAccountService> ().GetUserAccount(null, name);
+            string name = MainConsole.Instance.Prompt("Name of user");
+            UserAccount acc = m_registry.RequestModuleInterface<IUserAccountService>().GetUserAccount(null, name);
             if (acc == null)
             {
-                MainConsole.Instance.Warn ("User does not exist, no action taken.");
+                MainConsole.Instance.Warn("User does not exist, no action taken.");
                 return;
             }
 
@@ -310,7 +310,7 @@ namespace Universe.Addon.WebUI
 
             agent.OtherAgentInformation["WebUIEnabled"] = false;
             DataPlugins.RequestPlugin<IAgentConnector>().UpdateAgent(agent);
-            MainConsole.Instance.Warn ("Admin removed");
+            MainConsole.Instance.Warn("Admin removed");
         }
 
         #endregion
@@ -324,7 +324,7 @@ namespace Universe.Addon.WebUI
         private UUID AdminAgentID;
         private Dictionary<string, MethodInfo> APIMethods = new Dictionary<string, MethodInfo>();
 
-        public WebUIHTTPHandler(string pass, IRegistryCore reg, OSDMap gridInfo, UUID adminAgentID) : 
+        public WebUIHTTPHandler(string pass, IRegistryCore reg, OSDMap gridInfo, UUID adminAgentID) :
             base("POST", "/WEBUI")
         {
             m_registry = reg;
@@ -360,15 +360,15 @@ namespace Universe.Addon.WebUI
                     method = map["Method"].AsString();
                     if (method == "Login")
                     {
-                        resp = Login(map,false);
+                        resp = Login(map, false);
                     }
                     else if (method == "AdminLogin")
                     {
-                        resp = Login(map,true);
+                        resp = Login(map, true);
                     }
                     else if (APIMethods.ContainsKey(method))
                     {
-                        object[] args = new object[1]{map};
+                        object[] args = new object[1] { map };
                         resp = (OSDMap)APIMethods[method].Invoke(this, args);
                     }
                     else
@@ -385,7 +385,8 @@ namespace Universe.Addon.WebUI
             {
                 MainConsole.Instance.TraceFormat("[WebUI] Exception thrown: " + e.ToString());
             }
-            if(resp.Count == 0){
+            if (resp.Count == 0)
+            {
                 resp.Add("response", OSD.FromString("Failed"));
             }
             UTF8Encoding encoding = new UTF8Encoding();
@@ -436,57 +437,45 @@ namespace Universe.Addon.WebUI
             return resp;
         }
 
-        private OSDMap GiveUserMoney(OSDMap map)
-        {
-            OSDMap web_values = new OSDMap();
-            OSD user = map["user"];
-           
-            uint amount = map["amount"];
-            BaseCurrencyConnector m_connector = Framework.Utilities.DataManager.RequestPlugin<IBaseCurrencyConnector>() as BaseCurrencyConnector;
-            m_connector.UserCurrencyTransfer(user, UUID.Zero, amount, "Money Transfer",
-                TransactionType.BuyMoney, UUID.Zero);
-            MainConsole.Instance.InfoFormat("[WEBUI]: Transferring Money to " + user + " with the amount "+amount);
-            return map;
-        }
         private OSDMap CreateAccount(OSDMap map)
         {
             bool Verified = false;
             string Name = map["Name"].AsString();
-            
+
             string Password = "";
-            
+
             if (map.ContainsKey("Password"))
             {
-            	Password = map["Password"].AsString();
+                Password = map["Password"].AsString();
             }
             else
             {
-            	Password = map["PasswordHash"].AsString(); //is really plaintext password, the system hashes it later. Not sure why it was called PasswordHash to start with. I guess the original design was to have the PHP code generate the salt and password hash, then just simply store it here
+                Password = map["PasswordHash"].AsString(); //is really plaintext password, the system hashes it later. Not sure why it was called PasswordHash to start with. I guess the original design was to have the PHP code generate the salt and password hash, then just simply store it here
             }
-            
+
             //string PasswordSalt = map["PasswordSalt"].AsString(); //not being used
             string HomeRegion = map["HomeRegion"].AsString();
             string Email = map["Email"].AsString();
             string AvatarArchive = map["AvatarArchive"].AsString();
             int userLevel = map["UserLevel"].AsInteger();
             string UserTitle = map["UserTitle"].AsString();
-            
+
             //server expects: 0 is PG, 1 is Mature, 2 is Adult - use this when setting MaxMaturity and MaturityRating
             //viewer expects: 13 is PG, 21 is Mature, 42 is Adult
-            
+
             int MaxMaturity = 2; //set to adult by default
             if (map.ContainsKey("MaxMaturity")) //MaxMaturity is the highest level that they can change the maturity rating to in the viewer
             {
-            	MaxMaturity = map["MaxMaturity"].AsInteger();
+                MaxMaturity = map["MaxMaturity"].AsInteger();
             }
-            
+
             int MaturityRating = MaxMaturity; //set the default to whatever MaxMaturity was set tom incase they didn't define MaturityRating
-            
+
             if (map.ContainsKey("MaturityRating")) //MaturityRating is the rating the user wants to be able to see
             {
-            	MaturityRating = map["MaturityRating"].AsInteger();
+                MaturityRating = map["MaturityRating"].AsInteger();
             }
-            
+
             bool activationRequired = map.ContainsKey("ActivationRequired") ? map["ActivationRequired"].AsBoolean() : false;
 
             IUserAccountService accountService = m_registry.RequestModuleInterface<IUserAccountService>();
@@ -499,8 +488,8 @@ namespace Universe.Addon.WebUI
 
             accountService.CreateUser(Name, Password, Email);
             UserAccount user = accountService.GetUserAccount(null, Name);
-            IAgentInfoService agentInfoService = m_registry.RequestModuleInterface<IAgentInfoService> ();
-            IGridService gridService = m_registry.RequestModuleInterface<IGridService> ();
+            IAgentInfoService agentInfoService = m_registry.RequestModuleInterface<IAgentInfoService>();
+            IGridService gridService = m_registry.RequestModuleInterface<IGridService>();
             if (agentInfoService != null && gridService != null)
             {
                 GridRegion r = gridService.GetRegionByName(null, HomeRegion);
@@ -527,7 +516,7 @@ namespace Universe.Addon.WebUI
 
                 // could not find a way to save this data here.
                 DateTime RLDOB = map["RLDOB"].AsDate();
-				string RLGender = map["RLGender"].AsString();
+                string RLGender = map["RLGender"].AsString();
                 string RLName = map["RLName"].AsString();
                 string RLAddress = map["RLAddress"].AsString();
                 string RLCity = map["RLCity"].AsString();
@@ -538,15 +527,15 @@ namespace Universe.Addon.WebUI
 
 
                 IAgentConnector con = DataPlugins.RequestPlugin<IAgentConnector>();
-                con.CreateNewAgent (userID);
+                con.CreateNewAgent(userID);
 
-                IAgentInfo agent = con.GetAgent (userID);
-                
+                IAgentInfo agent = con.GetAgent(userID);
+
                 agent.MaxMaturity = MaxMaturity;
                 agent.MaturityRating = MaturityRating;
-                         
+
                 agent.OtherAgentInformation["RLDOB"] = RLDOB;
-				agent.OtherAgentInformation["RLGender"] = RLGender;
+                agent.OtherAgentInformation["RLGender"] = RLGender;
                 agent.OtherAgentInformation["RLName"] = RLName;
                 agent.OtherAgentInformation["RLAddress"] = RLAddress;
                 agent.OtherAgentInformation["RLCity"] = RLCity;
@@ -559,8 +548,8 @@ namespace Universe.Addon.WebUI
                     agent.OtherAgentInformation["WebUIActivationToken"] = Util.Md5Hash(activationToken.ToString() + ":" + Password);
                     resp["WebUIActivationToken"] = activationToken;
                 }
-                con.UpdateAgent (agent);
-                
+                con.UpdateAgent(agent);
+
                 accountService.StoreUserAccount(user);
 
                 IProfileConnector profileData = DataPlugins.RequestPlugin<IProfileConnector>();
@@ -575,10 +564,10 @@ namespace Universe.Addon.WebUI
                     profile.AArchiveName = AvatarArchive;
                 }
                 profile.IsNewUser = true;
-                
+
                 profile.MembershipGroup = UserTitle;
                 profile.CustomType = UserTitle;
-                
+
                 profileData.UpdateUserProfile(profile);
             }
 
@@ -687,7 +676,7 @@ namespace Universe.Addon.WebUI
             ILoginService loginService = m_registry.RequestModuleInterface<ILoginService>();
             IUserAccountService accountService = m_registry.RequestModuleInterface<IUserAccountService>();
             UserAccount account = null;
-            OSDMap resp = new OSDMap ();
+            OSDMap resp = new OSDMap();
             resp["Verified"] = OSD.FromBoolean(false);
 
             if (accountService == null || CheckIfUserExists(map)["Verified"] != true)
@@ -708,101 +697,101 @@ namespace Universe.Addon.WebUI
                         return resp;
                     }
                 }
-                resp["UUID"] = OSD.FromUUID (account.PrincipalID);
-                resp["FirstName"] = OSD.FromString (account.FirstName);
-                resp["LastName"] = OSD.FromString (account.LastName);
+                resp["UUID"] = OSD.FromUUID(account.PrincipalID);
+                resp["FirstName"] = OSD.FromString(account.FirstName);
+                resp["LastName"] = OSD.FromString(account.LastName);
                 resp["Email"] = OSD.FromString(account.Email);
                 Verified = true;
             }
 
-            resp["Verified"] = OSD.FromBoolean (Verified);
+            resp["Verified"] = OSD.FromBoolean(Verified);
 
             return resp;
         }
 
-		private OSDMap Login2(OSDMap map)
-		{
-			string Name = map["Name"].AsString();
-			string Password = map["Password"].AsString();
+        private OSDMap Login2(OSDMap map)
+        {
+            string Name = map["Name"].AsString();
+            string Password = map["Password"].AsString();
 
-			OSDMap resp = new OSDMap ();
-			resp["GoodLogin"] = OSD.FromBoolean(false);
-			
-			ILoginService loginService = m_registry.RequestModuleInterface<ILoginService>();
-			IUserAccountService accountService = m_registry.RequestModuleInterface<IUserAccountService>();
-			UserAccount account = null;
+            OSDMap resp = new OSDMap();
+            resp["GoodLogin"] = OSD.FromBoolean(false);
 
-			if (accountService == null || CheckIfUserExists(map)["Verified"] != true)
-			{
-				resp["why"] = OSD.FromString("AccountNotFound");
-				return resp;
-			}
+            ILoginService loginService = m_registry.RequestModuleInterface<ILoginService>();
+            IUserAccountService accountService = m_registry.RequestModuleInterface<IUserAccountService>();
+            UserAccount account = null;
 
-			account = m_registry.RequestModuleInterface<IUserAccountService>().GetUserAccount(null, Name);
+            if (accountService == null || CheckIfUserExists(map)["Verified"] != true)
+            {
+                resp["why"] = OSD.FromString("AccountNotFound");
+                return resp;
+            }
 
-			//Null means it went through without an error
+            account = m_registry.RequestModuleInterface<IUserAccountService>().GetUserAccount(null, Name);
 
-			if (loginService.VerifyClient (account.PrincipalID, Name, "UserAccount", Password))
-			{
-				UUID agentID = account.PrincipalID;
+            //Null means it went through without an error
 
-				IAgentInfo agentInfo = DataPlugins.RequestPlugin<IAgentConnector>().GetAgent(agentID);
+            if (loginService.VerifyClient(account.PrincipalID, Name, "UserAccount", Password))
+            {
+                UUID agentID = account.PrincipalID;
 
-				bool banned = ((agentInfo.Flags & IAgentFlags.TempBan) == IAgentFlags.TempBan) || ((agentInfo.Flags & IAgentFlags.PermBan) == IAgentFlags.PermBan);
+                IAgentInfo agentInfo = DataPlugins.RequestPlugin<IAgentConnector>().GetAgent(agentID);
 
-				if (banned) //get ban type
-				{
+                bool banned = ((agentInfo.Flags & IAgentFlags.TempBan) == IAgentFlags.TempBan) || ((agentInfo.Flags & IAgentFlags.PermBan) == IAgentFlags.PermBan);
 
-					if ((agentInfo.Flags & IAgentFlags.PermBan) == IAgentFlags.PermBan)
-					{
-						resp["why"] = OSD.FromString("PermBan");
-					}
-					else if ((agentInfo.Flags & IAgentFlags.TempBan) == IAgentFlags.TempBan)
-					{
-						resp["why"] = OSD.FromString("TempBan");
+                if (banned) //get ban type
+                {
 
-						if (agentInfo.OtherAgentInformation.ContainsKey("TemperaryBanInfo") == true)
-						{
-							resp["BannedUntil"] = OSD.FromInteger(Util.ToUnixTime(agentInfo.OtherAgentInformation["TemperaryBanInfo"]));
-						}
-						else
-						{
-							resp["BannedUntil"] = OSD.FromInteger(0);
-						}
-					}
-					else
-					{
-						resp["why"] = OSD.FromString("UnknownBan");
-					}
+                    if ((agentInfo.Flags & IAgentFlags.PermBan) == IAgentFlags.PermBan)
+                    {
+                        resp["why"] = OSD.FromString("PermBan");
+                    }
+                    else if ((agentInfo.Flags & IAgentFlags.TempBan) == IAgentFlags.TempBan)
+                    {
+                        resp["why"] = OSD.FromString("TempBan");
 
-					return resp;
-				}
-				else
-				{
-					resp["GoodLogin"] = OSD.FromBoolean(true);
+                        if (agentInfo.OtherAgentInformation.ContainsKey("TemperaryBanInfo") == true)
+                        {
+                            resp["BannedUntil"] = OSD.FromInteger(Util.ToUnixTime(agentInfo.OtherAgentInformation["TemperaryBanInfo"]));
+                        }
+                        else
+                        {
+                            resp["BannedUntil"] = OSD.FromInteger(0);
+                        }
+                    }
+                    else
+                    {
+                        resp["why"] = OSD.FromString("UnknownBan");
+                    }
 
-					resp["UserLevel"] = OSD.FromInteger(account.UserLevel);
-					resp["UUID"] = OSD.FromUUID (agentID);
-					resp["FirstName"] = OSD.FromString (account.FirstName);
-					resp["LastName"] = OSD.FromString (account.LastName);
-					resp["Email"] = OSD.FromString(account.Email);
+                    return resp;
+                }
+                else
+                {
+                    resp["GoodLogin"] = OSD.FromBoolean(true);
 
-					return resp;
-				}
-			}
-			else
-			{
-				resp["why"] = OSD.FromString("BadPassword");
-				return resp;
-			}
-		}
+                    resp["UserLevel"] = OSD.FromInteger(account.UserLevel);
+                    resp["UUID"] = OSD.FromUUID(agentID);
+                    resp["FirstName"] = OSD.FromString(account.FirstName);
+                    resp["LastName"] = OSD.FromString(account.LastName);
+                    resp["Email"] = OSD.FromString(account.Email);
+
+                    return resp;
+                }
+            }
+            else
+            {
+                resp["why"] = OSD.FromString("BadPassword");
+                return resp;
+            }
+        }
 
         private OSDMap SetWebLoginKey(OSDMap map)
         {
-            OSDMap resp = new OSDMap ();
+            OSDMap resp = new OSDMap();
             UUID principalID = map["PrincipalID"].AsUUID();
             UUID webLoginKey = UUID.Random();
-            IAuthenticationService authService = m_registry.RequestModuleInterface<IAuthenticationService> ();
+            IAuthenticationService authService = m_registry.RequestModuleInterface<IAuthenticationService>();
             if (authService != null)
             {
                 //Remove the old
@@ -815,11 +804,11 @@ namespace Universe.Addon.WebUI
             return resp;
         }
 
-		private OSDMap SetUserLevel(OSDMap map) //just sets a user level
-		{
-			OSDMap resp = new OSDMap();
+        private OSDMap SetUserLevel(OSDMap map) //just sets a user level
+        {
+            OSDMap resp = new OSDMap();
 
-			UUID agentID = map ["UserID"].AsUUID();
+            UUID agentID = map["UserID"].AsUUID();
             int userLevel = map["UserLevel"].AsInteger();
 
             IUserAccountService userService = m_registry.RequestModuleInterface<IUserAccountService>();
@@ -828,9 +817,9 @@ namespace Universe.Addon.WebUI
             if (account != null) //found
             {
                 account.UserLevel = userLevel;
-                
+
                 userService.StoreUserAccount(account);
-                
+
                 resp["UserFound"] = OSD.FromBoolean(true);
                 resp["Updated"] = OSD.FromBoolean(true);
             }
@@ -839,9 +828,9 @@ namespace Universe.Addon.WebUI
                 resp["UserFound"] = OSD.FromBoolean(false);
                 resp["Updated"] = OSD.FromBoolean(false);
             }
-            
-			return resp;
-		}
+
+            return resp;
+        }
 
         #endregion
 
@@ -930,7 +919,7 @@ namespace Universe.Addon.WebUI
 
             if ((auths.Authenticate(userID, "UserAccount", Util.Md5Hash(Password), 100) != string.Empty) && (Verified))
             {
-                auths.SetPassword (userID, "UserAccount", newPassword);
+                auths.SetPassword(userID, "UserAccount", newPassword);
             }
 
             return resp;
@@ -954,7 +943,7 @@ namespace Universe.Addon.WebUI
                 if (user.UserLevel >= 0)
                 {
                     IAuthenticationService auths = m_registry.RequestModuleInterface<IAuthenticationService>();
-                    auths.SetPassword (user.PrincipalID, "UserAccount", Password);
+                    auths.SetPassword(user.PrincipalID, "UserAccount", Password);
                 }
                 else
                 {
@@ -983,7 +972,7 @@ namespace Universe.Addon.WebUI
             if (verified)
             {
                 user.Name = map["Name"].AsString();
-                resp["Stored" ] = OSD.FromBoolean(accountService.StoreUserAccount(user));
+                resp["Stored"] = OSD.FromBoolean(accountService.StoreUserAccount(user));
             }
 
             return resp;
@@ -997,7 +986,7 @@ namespace Universe.Addon.WebUI
             resp["account"] = OSD.FromBoolean(false);
             UUID principalID = map["UserID"].AsUUID();
             UserAccount account = m_registry.RequestModuleInterface<IUserAccountService>().GetUserAccount(null, principalID);
-            if(account != null)
+            if (account != null)
             {
                 account.Email = map["Email"];
                 if (m_registry.RequestModuleInterface<IUserAccountService>().GetUserAccount(null, map["Name"].AsString()) == null)
@@ -1081,7 +1070,7 @@ namespace Universe.Addon.WebUI
             string Name = map["Name"].AsString();
             UUID userID = map["UUID"].AsUUID();
 
-            UserAccount account = Name != "" ? 
+            UserAccount account = Name != "" ?
                 m_registry.RequestModuleInterface<IUserAccountService>().GetUserAccount(null, Name) :
                  m_registry.RequestModuleInterface<IUserAccountService>().GetUserAccount(null, userID);
             if (account != null)
@@ -1127,7 +1116,7 @@ namespace Universe.Addon.WebUI
                 }
                 IAgentConnector agentConnector = DataPlugins.RequestPlugin<IAgentConnector>();
                 IAgentInfo agent = agentConnector.GetAgent(account.PrincipalID);
-                if(agent != null)
+                if (agent != null)
                 {
                     OSDMap agentMap = new OSDMap();
                     agentMap["RLName"] = agent.OtherAgentInformation["RLName"].AsString();
@@ -1168,37 +1157,37 @@ namespace Universe.Addon.WebUI
             resp["Finished"] = OSD.FromBoolean(true);
 
             UUID agentID = map["UserID"].AsUUID();
-            
+
             IGridWideMessageModule messageModule = m_registry.RequestModuleInterface<IGridWideMessageModule>();
             if (messageModule != null)
                 messageModule.KickUser(agentID, map["Message"].AsString());
-            
+
             return resp;
         }
-        
+
         private OSDMap GridWideAlert(OSDMap map)
         {
             OSDMap resp = new OSDMap();
             resp["Finished"] = OSD.FromBoolean(true);
-            
+
             IGridWideMessageModule messageModule = m_registry.RequestModuleInterface<IGridWideMessageModule>();
             if (messageModule != null)
                 messageModule.SendAlert(map["Message"].AsString());
-            
+
             return resp;
         }
-        
+
         private OSDMap MessageUser(OSDMap map)
         {
             OSDMap resp = new OSDMap();
             resp["Finished"] = OSD.FromBoolean(true);
-            
+
             UUID agentID = map["UserID"].AsUUID();
-            
+
             IGridWideMessageModule messageModule = m_registry.RequestModuleInterface<IGridWideMessageModule>();
             if (messageModule != null)
                 messageModule.MessageUser(agentID, map["Message"].AsString());
-            
+
             return resp;
         }
 
@@ -1207,7 +1196,8 @@ namespace Universe.Addon.WebUI
 
         #region banning
 
-        private void doBan(UUID agentID, DateTime? until){
+        private void doBan(UUID agentID, DateTime? until)
+        {
             var conn = DataPlugins.RequestPlugin<IAgentConnector>();
             IAgentInfo agentInfo = conn.GetAgent(agentID);
             if (agentInfo != null)
@@ -1228,7 +1218,7 @@ namespace Universe.Addon.WebUI
             OSDMap resp = new OSDMap();
             resp["Finished"] = OSD.FromBoolean(true);
             UUID agentID = map["UserID"].AsUUID();
-            doBan(agentID,null);
+            doBan(agentID, null);
 
             return resp;
         }
@@ -1324,7 +1314,7 @@ namespace Universe.Addon.WebUI
 
             OSDArray users = new OSDArray();
             MainConsole.Instance.TraceFormat("{0} accounts found", accounts.Count);
-            for(int i = start; i < end && i < accounts.Count; i++)
+            for (int i = start; i < end && i < accounts.Count; i++)
             {
                 UserAccount acc = accounts[i];
                 OSDMap userInfo = new OSDMap();
@@ -1458,11 +1448,13 @@ namespace Universe.Addon.WebUI
             OSDMap resp = new OSDMap();
             RegionFlags type = map.Keys.Contains("RegionFlags") ? (RegionFlags)map["RegionFlags"].AsInteger() : RegionFlags.RegionOnline;
             int start = map.Keys.Contains("Start") ? map["Start"].AsInteger() : 0;
-            if(start < 0){
+            if (start < 0)
+            {
                 start = 0;
             }
             int count = map.Keys.Contains("Count") ? map["Count"].AsInteger() : 10;
-            if(count < 0){
+            if (count < 0)
+            {
                 count = 1;
             }
 
@@ -1511,11 +1503,13 @@ namespace Universe.Addon.WebUI
                 string regionName = map.ContainsKey("Region") ? map["Region"].ToString().Trim() : "";
                 UUID regionID = map.ContainsKey("RegionID") ? UUID.Parse(map["RegionID"].ToString()) : UUID.Zero;
                 //UUID scopeID = map.ContainsKey("ScopeID") ? UUID.Parse(map["ScopeID"].ToString()) : UUID.Zero;
-                GridRegion region=null;
+                GridRegion region = null;
                 if (regionID != UUID.Zero)
                 {
                     region = regiondata.Get(regionID, null);
-                }else if(regionName != string.Empty){
+                }
+                else if (regionName != string.Empty)
+                {
                     region = regiondata.Get(regionName, null, null, null)[0];
                 }
                 if (region != null)
@@ -1530,7 +1524,8 @@ namespace Universe.Addon.WebUI
 
         #region Parcels
 
-        private static OSDMap LandData2WebOSD(LandData parcel){
+        private static OSDMap LandData2WebOSD(LandData parcel)
+        {
             OSDMap parcelOSD = parcel.ToOSD();
             parcelOSD["GenericData"] = parcelOSD.ContainsKey("GenericData") ? (parcelOSD["GenericData"].Type == OSDType.Map ? parcelOSD["GenericData"] : (OSDMap)OSDParser.DeserializeLLSDXml(parcelOSD["GenericData"].ToString())) : new OSDMap();
             parcelOSD["Bitmap"] = OSD.FromBinary(parcelOSD["Bitmap"]).ToString();
@@ -1558,12 +1553,13 @@ namespace Universe.Addon.WebUI
                 if (total > 0)
                 {
                     resp["Total"] = OSD.FromInteger((int)total);
-                    if(count == 0){
+                    if (count == 0)
+                    {
                         return resp;
                     }
                     List<LandData> parcels = directory.GetParcelsByRegion(start, count, RegionID, owner, flags, category);
                     OSDArray Parcels = new OSDArray(parcels.Count);
-                    parcels.ForEach(delegate(LandData parcel)
+                    parcels.ForEach(delegate (LandData parcel)
                     {
                         Parcels.Add(LandData2WebOSD(parcel));
                     });
@@ -1579,7 +1575,7 @@ namespace Universe.Addon.WebUI
             OSDMap resp = new OSDMap();
 
             UUID regionID = map.ContainsKey("RegionID") ? UUID.Parse(map["RegionID"].ToString()) : UUID.Zero;
-           // UUID scopeID = map.ContainsKey("ScopeID") ? UUID.Parse(map["ScopeID"].ToString()) : UUID.Zero;
+            // UUID scopeID = map.ContainsKey("ScopeID") ? UUID.Parse(map["ScopeID"].ToString()) : UUID.Zero;
             UUID parcelID = map.ContainsKey("ParcelInfoUUID") ? UUID.Parse(map["ParcelInfoUUID"].ToString()) : UUID.Zero;
             string parcelName = map.ContainsKey("Parcel") ? map["Parcel"].ToString().Trim() : string.Empty;
 
@@ -1589,9 +1585,12 @@ namespace Universe.Addon.WebUI
             {
                 LandData parcel = null;
 
-                if(parcelID != UUID.Zero){
+                if (parcelID != UUID.Zero)
+                {
                     parcel = directory.GetParcelInfo(parcelID);
-                }else if(regionID != UUID.Zero && parcelName != string.Empty){
+                }
+                else if (regionID != UUID.Zero && parcelName != string.Empty)
+                {
                     parcel = directory.GetParcelInfo(regionID, parcelName);
                 }
 
@@ -1638,7 +1637,7 @@ namespace Universe.Addon.WebUI
             OSDArray Groups = new OSDArray();
             if (groups != null)
             {
-                Dictionary<string, bool> sort       = new Dictionary<string, bool>();
+                Dictionary<string, bool> sort = new Dictionary<string, bool>();
                 Dictionary<string, bool> boolFields = new Dictionary<string, bool>();
 
                 if (map.ContainsKey("Sort") && map["Sort"].Type == OSDType.Map)
@@ -1758,7 +1757,7 @@ namespace Universe.Addon.WebUI
                         gnd["ItemID"] = OSD.FromUUID(GND.ItemID);
                         gnd["AssetType"] = OSD.FromInteger((int)GND.AssetType);
                         gnd["ItemName"] = OSD.FromString(GND.ItemName);
-                      //  GroupNoticeInfo notice = groups.GetGroupNotice(AdminAgentID, GND.NoticeID);
+                        //  GroupNoticeInfo notice = groups.GetGroupNotice(AdminAgentID, GND.NoticeID);
                         gnd["Message"] = OSD.FromString(groups.GetGroupNotice(AdminAgentID, GND.NoticeID).Message);
                         GroupNotices.Add(gnd);
                     }
@@ -1803,7 +1802,7 @@ namespace Universe.Addon.WebUI
             OSDMap args = new OSDMap();
             args["Start"] = OSD.FromString(start.ToString());
             args["Count"] = OSD.FromString(count.ToString());
-            args["Groups"] = new OSDArray(GroupIDs.ConvertAll(x=>OSD.FromString(x.ToString())));
+            args["Groups"] = new OSDArray(GroupIDs.ConvertAll(x => OSD.FromString(x.ToString())));
 
             return GroupNotices(args);
         }
@@ -1811,7 +1810,30 @@ namespace Universe.Addon.WebUI
         #endregion
 
         #endregion
+        #region Currency
 
+        private OSDMap GiveUserMoney(OSDMap map)
+        {
+            OSDMap web_values = new OSDMap();
+            OSD user = map["user"];
+
+            uint amount = map["amount"];
+            BaseCurrencyConnector m_connector = Framework.Utilities.DataManager.RequestPlugin<IBaseCurrencyConnector>() as BaseCurrencyConnector;
+            m_connector.UserCurrencyTransfer(user, UUID.Zero, amount, "Money Transfer",
+                TransactionType.BuyMoney, UUID.Zero);
+            MainConsole.Instance.InfoFormat("[WEBUI]: Transferring Money to " + user + " with the amount " + amount);
+            return map;
+        }
+        private OSDMap GetUserMoney(OSDMap map)
+        {
+            OSDMap web_values = new OSDMap();
+            OSD user = map["user"];
+            BaseCurrencyConnector m_connector = Framework.Utilities.DataManager.RequestPlugin<IBaseCurrencyConnector>() as BaseCurrencyConnector;
+            int money = (int)m_connector.GetUserCurrency(user).Amount;
+            web_values["Amount"] = OSD.FromInteger(money);
+            return web_values;
+        }
+        #endregion
         #endregion
     }
 }
