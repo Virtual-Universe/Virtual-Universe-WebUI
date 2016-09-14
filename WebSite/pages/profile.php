@@ -1,4 +1,4 @@
-<?php
+<pre><?php
 if(empty($_GET['user']) || $_GET['user'] == "")
 {
 $user = $_SESSION['uuid'];
@@ -10,6 +10,28 @@ $user = $_GET['user'];
 $data = array("Method" => "GetProfile",  'WebPassword' => md5(WEBUI_PASSWORD),
                                  'UUID' => $user);
                                      $verified = $curl->perform_action($data);
+                          
+                                     echo "<center><h3><b>Account Info:</b></h3><hr>";
+                                            
+                                               $profileImage = $verified[profile][Image];
+                                                 $display = $verified[profile][DisplayName];
+                                     $name = $verified[account][Name];
+                                     $account = $verified[account][AccountInfo];
+                                     $account = str_replace("\n","&nbsp;",$account);
+            if ($profileImage == "00000000-0000-0000-0000-000000000000" || $profileImage == "")
+            {
+                $profileLink = "info.jpg";
+            }
+            else
+            {
+                $profileLink = WEBUI_TEXTURE_SERVICE . '/index.php?method=GridTexture&uuid=' . $profileImage;
+          }
+
+echo "<img src='$profileLink'/><br /><hr>";
+                                   
+                                     echo "Username: <br /><b>$name</b><hr> <br />DisplayName: <br /><b>$display</b><br />User Account:<br /> <b>$account</b>";
+                              
+                                  
 ///Dont anyone ever dare to ask me doing bitmasks again i HATE those thing like gargamel hates the smurfs!!!!!!
      $wantmask = array();
 		$wantmask['build']		=   1;
@@ -28,7 +50,7 @@ $data = array("Method" => "GetProfile",  'WebPassword' => md5(WEBUI_PASSWORD),
    if($verified['profile']['WantToMask'][3] & $wantmask['buy']) { $buy = "yes"; } else { $buy = "no"; }
    if($verified['profile']['WantToMask'][3] & $wantmask['sell']) { $sell = "yes"; } else { $sell = "no"; }
    if($verified['profile']['WantToMask'][3] & $wantmask['hire']) { $hire = "yes"; } else { $hire = "no"; }
-   echo "<table>
+   echo "<center><h3><b>I want to:</b></h3><br /><table>
 <tbody>
 <tr>
 <td>Build&nbsp;</td>
@@ -55,5 +77,5 @@ $data = array("Method" => "GetProfile",  'WebPassword' => md5(WEBUI_PASSWORD),
 <td><img src='images/$hire.png'></td>
 </tr>
 </tbody>
-</table>";
+</table></table>";
 ?>
