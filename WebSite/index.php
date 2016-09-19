@@ -3,9 +3,16 @@ ini_set("display_errors",0);
 session_start();
 header('Content-Type: text/html; charset=ISO-8859-1');
 header('Cache-control: private'); // IE 6 FIX
+require("config/config.php");
+require("classes/class_curl.php");
+require("includes/check.php");
     if($_GET['page'] == "map")
     {
     $maps = "class='active'";
+    }
+    else
+    {
+    $maps = null;         
     }
     
 if(isSet($_GET['lang']))
@@ -54,121 +61,150 @@ $_GET['page'] = "home";
 include_once 'language/'.$lang_file;
 ?>
 <!DOCTYPE html>
+<html lang="en">
+
 <head>
-<?php
-require("config/config.php");
-require("classes/class_curl.php");
-require("classes/class_mysqli.php");
-$db = new DB('root', 'xxx', 'database');
-echo "<title>".TITLE."</title>";
-?>
-<link rel="stylesheet" href="css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-<link rel="stylesheet" href="css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-<link rel="stylesheet" href="css/custom.css" type="text/css" />
-<script src="js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="js/bootstrap.min.js"></script> 
-    
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <script src="includes/slmapapi.php"></script>
+    <link rel="stylesheet" type="text/css" href="css/slmapapi.css" />
+       <link rel="stylesheet" type="text/css" href="css/custom.css" />
+
+    <script type="text/javascript">
+    function loadmap(){
+        var coords = {'x' : <?php  echo $mapstartX; ?> + 0.5, 'y' : <?php echo $mapstartY; ?> + 0.5},
+        mapInstance = new SLURL.Map(document.getElementById('map-container'), {'overviewMapControl':true});
+        mapInstance.centerAndZoomAtSLCoord(new SLURL.XYPoint(coords.x, coords.y), 3);}
+    $(document).ready(loadmap);
+    </script>   
+    <script type="text/javascript">
+$(document).ready(function() {
+    $('dropdown-toggle').dropdown()
+});
+</script> 
 <script src="https://use.fontawesome.com/5ea71d2c53.js"></script>
 
+  <title><?=TITLE;?></title>
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
 </head>
-<body>
-<header class="navbar navbar-inverse navbar-fixed-top bs-docs-nav">
-  <div class="container">
-    <div class="navbar-header">
-      <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a href="./" class="navbar-brand"><?=TITLE;?></a>
-    </div>
-    <nav class="collapse navbar-collapse bs-navbar-collapse">
-      <ul class="nav navbar-nav">
-        <li  <?=$maps;?>>
+<body class="container_me">
+  <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+               <li> <a class="navbar-brand" href="/">
+                  <?=HTML_TITLE;?>
+                </a> </li>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                  <li>
           <a href="?page=map"><?=$lang['MENU_MAPS'];?></a>
         </li>
 				<li>
 	        <a href="?page=reg"><?=$lang['MENU_REGISTER'];?></a>
 	      </li>
-        <li>
-          <a href="#" data-toggle="modal" data-target="#myModal"><?=$lang['MENU_LOGIN'];?></a>
-        </li>
-        <li>
-          <a href="#"><?=$lang['MENU_REGIONS'];?></a>
+                    <li>
+          <a href="?page=regions"><?=$lang['MENU_REGIONS'];?></a>
         </li>
           <li>
           <a href="#"><?=$lang['MENU_DOWNLOAD'];?></a>
         </li>
-      </ul>
-      <?php
-      if(isset($_SESSION['WEBUI_LOGGED']))
-      {
-    
-
-                                 ?>
-      <ul class="nav pull-right navbar-nav">
+                </ul>
+                <?php if (!is_logged($_SESSION['uuid']))
+                {
+                
+          echo '       <ul class="nav pull-right navbar-nav">
+                   <li>     <a href="#" data-toggle="modal" data-target="#login-modal">Login</a></li>
+        </ul>'; 
+        }
+        else
+        {
+        ?>
+         <ul class="nav pull-right navbar-nav">
       <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><?=$_SESSION['FirstName'];?> <?=$_SESSION['LastName'];?> 
       <b class="caret"></b></a>
       <ul class="dropdown-menu">
       <li><a href="?page=buy">Money: <?=include("includes/money.php");?></a></li>
       <li><hr></li>
+      <li><a href="?page=profile">My Profile</a></li>
       <li><a href="logout.php">Logout</a></li>
       </ul>
       </li>
       </ul>
-      
-      <?php
-      }
-      ?>
-      <ul class="nav pull-right navbar-nav">
+        <?
+        }
+                  echo '<ul class="nav pull-right navbar-nav">
   <li class="dropdown">
     <a href="#" class="dropdown-toggle" data-toggle="dropdown" >
-    <?=$lang['MENU_LANG'];?> <i class="fa fa-language" aria-hidden="true"></i>
+    Language<i class="fa fa-language" aria-hidden="true"></i>
 
       <b class="caret"></b>
     </a>
     <ul class="dropdown-menu">
-      <li><a href="?lang=en&amp;page=<?=$_GET['page'];?>">English&nbsp;<img src='images/icons/us.png' alt='English' />/<img src='images/icons/gb.png' alt='English' /></a></li>
-      <li><a href="?lang=de&amp;page=<?=$_GET['page'];?>">German&nbsp;<img src='images/icons/de.png' alt='English' /></a></li>
+      <li><a href="?lang=en">English&nbsp;<img src="images/icons/us.png" alt="English" />/<img src="images/icons/gb.png" alt="English" /></a></li>
+      <li><a href="?lang=de">German&nbsp;<img src="images/icons/de.png" alt="German" /></a></li>
     </ul>
   </li>
-</ul>
-    </nav>
-   </div>
-</header> <br><br><br>  
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Login</h4>
-                  </div>
-                  <div class="modal-body">
-                  <form action="login.php" method="POST">
-                
-  <span class="fa fa-user" id="basic-addon1"></span>
-                  
-                  <input type="text" class="form-control" name="logname" aria-describedby="basic-addon1" placeholder="Username" required ><br />
-                  <br>
-                  
-                   <span class="fa fa-key" id="basic-addon2"></span>
-                  <input type="password" class="form-control" aria-describedby="basic-addon2" placeholder="*****" name="logpass" required><br />
-                 
+</ul>';
+        ?>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+</nav>
+<!-- Login -->
+<div class="modal fade" id="login-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    	  <div class="modal-dialog">
+			<div class="loginmodal-container">
+					<h1>Login to Your Account</h1><br>
+				  <form action="login.php" method="post">
+					<input type="text" name="logname" placeholder="Username">
+					<input type="password" name="logpass" placeholder="Password">
+					<input type="submit" name="login" class="login loginmodal-submit" value="Login">
+				  </form>
+					
+				  <div class="login-help">
+					<a href="#">Register</a> - <a href="#">Forgot Password</a>
+				  </div>
+				</div>
+    </div>
 
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <input type="submit" name="submit" class="btn btn-primary" value="Login"><br />
-                    <small><?=$lang['ASK_REG'];?></small>
-                     </form>
-                  </div>
-                  
-                </div>
-              </div>
-            </div> 
-         
-           
-<?php                                                     
+  </div>
+<!-- /login -->
+<?php
+ if(isset($_SESSION['uuid']))
+ {
+ $data = array("Method" => "GetFriends",  'WebPassword' => md5(WEBUI_PASSWORD), 'UserID' => $_SESSION['uuid']);
+$verified = $curl->perform_action($data);
+foreach($verified as $key => $friend)
+{
+foreach ($friend as $friends)
+{
+$uid = $friends['PrincipalID'];
+$fname = $friends['Name'];
+$new .= "<a href='?page=profile&amp;user=$uid'>$fname</a><br />";
+}
+ }
+ echo $new;
+ }                                                    
 
 if(isset($_GET['page']))
 { 
@@ -186,13 +222,8 @@ else
 {
 require("pages/home.php");
 }
-?>  
-   <footer class="footer">
-      <div class="container">
-        <p class="text-muted">&copy; <?=date('Y');?> <?=TITLE;?><br /><a href="http://www.w3.org/html/logo/">
-<img src="https://www.w3.org/html/logo/badge/html5-badge-h-css3.png" width="64" height="34" alt="HTML5 Powered with CSS3 / Styling" title="HTML5 Powered with CSS3 / Styling">
-</a></p>
-      </div>
-    </footer>
+?>    
+
+        
   </body>
 </html>

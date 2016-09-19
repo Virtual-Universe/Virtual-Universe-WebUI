@@ -1,3 +1,5 @@
+<pre>
+<form action="?page=process_reg" method="post">
 <h1 class="radiok">Select Your inworld look</h1> <hr>
 <div class="container">
   <br>
@@ -58,4 +60,7 @@ $data = array('Method' => 'GetAvatarArchives', 'WebPassword' => md5(WEBUI_PASSWO
     </a>
   </div>
 </div>
+<center><b>Firstname</b></center><br>
+<input type=""  class="form-control"><br>
 
+</pre>

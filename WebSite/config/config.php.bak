@@ -16,10 +16,10 @@ $mapstartX = 1000;
 $mapstartY = 1000;
 $display_marker="tr";
 
-$mysql = mysql_connect("localhost","root","xxxxx") or die(mysql_error());
+$mysql = mysql_connect("localhost","root","derwert") or die(mysql_error());
 if($mysql)
 {
-mysql_select_db("xxxx",$mysql);
+mysql_select_db("white",$mysql);
 }
 define("CURRENCY","BaseCurrency"); ///BaseCurrency or AdvancedCurrency ///not used at the moment
 ?>
