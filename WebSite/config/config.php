@@ -6,7 +6,7 @@ define("WEBUI_SERVICE_URL","https://virtualnexus.eu:81/WEBUI");
 define("WEBUI_TEXTURE_SERVICE","https://virtualnexus.eu:81");
 define("WEBUI_MAP_SERVICE","https://virtualnexus.eu:81/MapService");
 define("WEBUI_MAPAPI_SERVICE","https://virtualnexus.eu:81/MapAPI");
-define("WEBUI_PASSWORD","derwert");
+define("WEBUI_PASSWORD","Password");
 define("DEFAULT_AVATAR", "Ruth"); ///important for avatar slider to work, if the avatar archive name contains spaces it turns into _ so Male Avatar turns into Male_Avatar , this is used to set the "active" class on the slider all others are fetch automatically
 $ALLOW_ZOOM = true;
 $zoomLevel = 5;
