@@ -6,6 +6,7 @@ header('Cache-control: private'); // IE 6 FIX
 require("config/config.php");
 require("classes/class_curl.php");
 require("includes/check.php");
+include("includes/json.php");
     if($_GET['page'] == "map")
     {
     $maps = "class='active'";
@@ -96,6 +97,40 @@ $(document).ready(function() {
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/css/bootstrap-select.min.css">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/js/bootstrap-select.min.js"></script>
+
+<!-- (Optional) Latest compiled and minified JavaScript translation files -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/js/i18n/defaults-*.min.js"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.15.1/jquery.validate.min.js"></script>
+
+<script src='js/tinymce/tinymce.min.js'></script>
+<script src="js/form-validation.js"></script>
+<script>
+  tinymce.init({
+    selector: '#ticketarea',
+height: '300px',
+width: '600px' ,
+	    theme: "modern",
+skin: 'custom',
+      force_br_newlines : false,
+      force_p_newlines : false,
+      forced_root_block : '',
+       cleanup : true ,
+       remove_redundant_brs : true
+
+  });
+  
+    function validate() {
+        if ((tinymce.EditorManager.get('message').getContent()) == '') {
+            alert('Blog Description can not be empty.');
+            return false;
+        }
+    }
+  </script>
 </head>
 <body class="container_me">
   <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -116,16 +151,16 @@ $(document).ready(function() {
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
                   <li>
-          <a href="?page=map"><?=$lang['MENU_MAPS'];?></a>
+          <a href="?page=map"><?php echo $lang['MENU_MAPS']; ?></a>
         </li>
 				<li>
-	        <a href="?page=reg"><?=$lang['MENU_REGISTER'];?></a>
+	        <a href="?page=reg"><?php $lang['MENU_REGISTER']; ?></a>
 	      </li>
                     <li>
-          <a href="?page=regions"><?=$lang['MENU_REGIONS'];?></a>
+          <a href="?page=regions"><?php echo $lang['MENU_REGIONS']; ?></a>
         </li>
           <li>
-          <a href="#"><?=$lang['MENU_DOWNLOAD'];?></a>
+          <a href="#"><?echo $lang['MENU_DOWNLOAD']; ?></a>
         </li>
                 </ul>
                 <?php if (!is_logged($_SESSION['uuid']))
@@ -142,7 +177,7 @@ $(document).ready(function() {
       <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><?=$_SESSION['FirstName'];?> <?=$_SESSION['LastName'];?> 
       <b class="caret"></b></a>
       <ul class="dropdown-menu">
-      <li><a href="?page=buy">Money: <?=include("includes/money.php");?></a></li>
+      <li><a href="?page=buy">Money: <?php include("includes/money.php"); ?></a></li>
       <li><hr></li>
       <li><a href="?page=profile">My Profile</a></li>
       <li><a href="logout.php">Logout</a></li>
@@ -178,7 +213,7 @@ $(document).ready(function() {
 				  <form action="login.php" method="post">
 					<input type="text" name="logname" placeholder="Username">
 					<input type="password" name="logpass" placeholder="Password">
-					<input type="submit" name="login" class="login loginmodal-submit" value="Login">
+				<button type="submit">Login</button>
 				  </form>
 					
 				  <div class="login-help">

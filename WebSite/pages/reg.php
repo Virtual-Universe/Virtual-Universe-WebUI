@@ -1,7 +1,10 @@
-<pre>
-<form action="?page=process_reg" method="post">
+	<script src="js/magic.js"></script>
+<div class="section group">
+	<div class="col span_2_of_2">
+<form action="process_reg.php" id="formreg" method="post">
 <h1 class="radiok">Select Your inworld look</h1> <hr>
 <div class="container">
+
   <br>
   <div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="false">
       <div class="carousel-inner" role="listbox">
@@ -33,7 +36,6 @@ $data = array('Method' => 'GetAvatarArchives', 'WebPassword' => md5(WEBUI_PASSWO
       }
       $img = WEBUI_TEXTURE_SERVICE."/index.php?method=GridTexture&uuid=".$snap;
  
-
 ?>
 
     <!-- Wrapper for slides -->
@@ -60,7 +62,26 @@ $data = array('Method' => 'GetAvatarArchives', 'WebPassword' => md5(WEBUI_PASSWO
     </a>
   </div>
 </div>
-<center><b>Firstname</b></center><br>
-<input type=""  class="form-control"><br>
-
-</pre>
+<center>
+	<div id="name-group">
+  <b>Firstname</b><br>
+<input type="text" name="ACCFIRST" class="normal" required><br>
+<b>Lastname</b><br>
+<input type="text" name="ACCLAST" class="normal" required></div><br>
+<div id="pass-group">
+<b>Password</b><br>
+<input type="text" name="pass" class="normal" required><br>
+<b>Confirm Password</b><br>
+<input type="text" name="cpass" class="normal" required>
+</div>
+<br>
+<b>Date of Birth</b><br /><?php
+echo displayDOB();
+?> <br>
+	<div id="email-group">
+<b>Email</b><br>
+<input type="text" name='email' class="normal" required></div><br>
+<input type="submit" class="normal" value="Sign Up">
+</form>
+</div></div>
+</center>
