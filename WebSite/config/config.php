@@ -26,5 +26,5 @@ if($mysql)
 	 mysql_select_db("universe",$mysql);
 } 
 define("CURRENCY","BaseCurrency"); ///BaseCurrency 
-;define("CURRENCY","AdvancedCurrency"); // AdvancedCurrency is not fully implemented at the moment 
+//define("CURRENCY","AdvancedCurrency"); // AdvancedCurrency is not fully implemented at the moment 
 ?>
