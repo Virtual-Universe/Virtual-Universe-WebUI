@@ -1,2 +1,0 @@
-  <div class="container"><h1>OOOPS You broke it :O</h1><hr><h3>This means the page you where looking for does not exist.<h3><hr>
-<small>Info for Nerds :P This is a 404 Not Found error the requested info was  <?="http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";?></small></div>
